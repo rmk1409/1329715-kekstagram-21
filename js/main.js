@@ -19,8 +19,18 @@ const MIN_LIKE_COUNT = 15;
 const SHIFT_LIKE_COUNT = 185;
 const MAX_COMMENT_COUNT = 3;
 const AVATAR_COUNT = 6;
+const AVATAR_SIZE = 35;
 const PICTURE_TEMPLATE = document.querySelector(`#picture`).content.querySelector(`a.picture`);
 const PICTURES = document.querySelector(`.pictures`);
+const BIG_PICTURE = document.querySelector(`.big-picture`);
+const BIG_PICTURE_IMG = BIG_PICTURE.querySelector(`.big-picture__img img`);
+const BIG_PICTURE_LIKE_COUNT = BIG_PICTURE.querySelector(`.likes-count`);
+const BIG_PICTURE_COMMENT_COUNT = BIG_PICTURE.querySelector(`.comments-count`);
+const SOCIAL_COMMENTS = BIG_PICTURE.querySelector(`.social__comments`);
+const SOCIAL_COMMENT_LIST = SOCIAL_COMMENTS.querySelectorAll(`li`);
+const BIG_PICTURE_CAPTION = BIG_PICTURE.querySelector(`.social__caption`);
+const BIG_PICTURE_SOCIAL_COMMENT_COUNT = BIG_PICTURE.querySelector(`.social__comment-count`);
+const BIG_PICTURE_LOADER_BUTTON = BIG_PICTURE.querySelector(`.comments-loader`);
 
 function generateComments() {
   const result = [];
@@ -70,4 +80,44 @@ function createPictures(dataArray) {
   PICTURES.appendChild(fragment);
 }
 
-createPictures(generatePictures(PHOTO_COUNT));
+let pictures = generatePictures(PHOTO_COUNT);
+createPictures(pictures);
+
+BIG_PICTURE.classList.remove(`hidden`);
+
+function makeCommentElement(data) {
+  const result = document.createElement(`li`);
+  result.classList.add(`social__comment`);
+  const avatarElement = document.createElement(`img`);
+  avatarElement.classList.add(`social__picture`);
+  avatarElement.src = data.avatar;
+  avatarElement.alt = data.name;
+  avatarElement.width = AVATAR_SIZE;
+  avatarElement.height = AVATAR_SIZE;
+  result.appendChild(avatarElement);
+  const msgElement = document.createElement(`p`);
+  msgElement.classList.add(`social__text`);
+  msgElement.textContent = data.message;
+  result.appendChild(msgElement);
+  return result;
+}
+
+function setupBigPicture(element) {
+  BIG_PICTURE_IMG.src = element.url;
+  BIG_PICTURE_LIKE_COUNT.textContent = element.likes;
+  BIG_PICTURE_COMMENT_COUNT.textContent = element.comments.length.toString();
+  BIG_PICTURE_CAPTION.textContent = element.description;
+  BIG_PICTURE_SOCIAL_COMMENT_COUNT.classList.add(`hidden`);
+  BIG_PICTURE_LOADER_BUTTON.classList.add(`hidden`);
+  document.body.classList.add(`modal-open`);
+  SOCIAL_COMMENT_LIST.forEach((el) => {
+    el.remove();
+  });
+  const fragment = document.createDocumentFragment();
+  for (let comment of element.comments) {
+    fragment.appendChild(makeCommentElement(comment));
+  }
+  SOCIAL_COMMENTS.appendChild(fragment);
+}
+
+setupBigPicture(pictures[0]);
