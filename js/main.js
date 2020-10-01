@@ -20,104 +20,102 @@ const SHIFT_LIKE_COUNT = 185;
 const MAX_COMMENT_COUNT = 3;
 const AVATAR_COUNT = 6;
 const AVATAR_SIZE = 35;
-const PICTURE_TEMPLATE = document.querySelector(`#picture`).content.querySelector(`a.picture`);
-const PICTURES = document.querySelector(`.pictures`);
-const BIG_PICTURE = document.querySelector(`.big-picture`);
-const BIG_PICTURE_IMG = BIG_PICTURE.querySelector(`.big-picture__img img`);
-const BIG_PICTURE_LIKE_COUNT = BIG_PICTURE.querySelector(`.likes-count`);
-const BIG_PICTURE_COMMENT_COUNT = BIG_PICTURE.querySelector(`.comments-count`);
-const SOCIAL_COMMENTS = BIG_PICTURE.querySelector(`.social__comments`);
-const SOCIAL_COMMENT_LIST = SOCIAL_COMMENTS.querySelectorAll(`li`);
-const BIG_PICTURE_CAPTION = BIG_PICTURE.querySelector(`.social__caption`);
-const BIG_PICTURE_SOCIAL_COMMENT_COUNT = BIG_PICTURE.querySelector(`.social__comment-count`);
-const BIG_PICTURE_LOADER_BUTTON = BIG_PICTURE.querySelector(`.comments-loader`);
+
+const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`a.picture`);
+const pictureSection = document.querySelector(`.pictures`);
+const bigPicture = document.querySelector(`.big-picture`);
+const bigPictureImg = bigPicture.querySelector(`.big-picture__img img`);
+const bigPictureLikeCount = bigPicture.querySelector(`.likes-count`);
+const bigPictureCommentCount = bigPicture.querySelector(`.comments-count`);
+const socialCommentsList = bigPicture.querySelector(`.social__comments`);
+const bigPictureCaption = bigPicture.querySelector(`.social__caption`);
+const bigPictureSocialCommentCount = bigPicture.querySelector(`.social__comment-count`);
+const bigPictureLoaderButton = bigPicture.querySelector(`.comments-loader`);
 
 function generateComments() {
-  const result = [];
+  const comments = [];
   const commentCount = Math.ceil(Math.random() * MAX_COMMENT_COUNT);
   for (let i = 0; i < commentCount; i++) {
     const generatedAvatarValue = `img/avatar-${Math.ceil(Math.random() * AVATAR_COUNT)}.svg`;
     const generatedMessageValue = MESSAGE_TEMPLATES[Math.floor(Math.random() * MESSAGE_TEMPLATES.length)];
     const generatedNameValue = NAME_TEMPLATES[Math.floor(Math.random() * NAME_TEMPLATES.length)];
-    result.push({
+    comments.push({
       avatar: generatedAvatarValue,
       message: generatedMessageValue,
       name: generatedNameValue
     });
   }
-  return result;
+  return comments;
 }
 
 function generatePictures(count) {
-  const result = [];
+  const pictures = [];
   for (let i = 0; i < count; i++) {
     const generatedUrlValue = `photos/${i + 1}.jpg`;
     const generatedDescriptionValue = `descr - ${i + 1}`;
     const generatedLikesValue = Math.floor(MIN_LIKE_COUNT + Math.random() * SHIFT_LIKE_COUNT);
-    result.push({
+    pictures.push({
       url: generatedUrlValue,
       description: generatedDescriptionValue,
       likes: generatedLikesValue,
       comments: generateComments()
     });
   }
-  return result;
+  return pictures;
 }
 
-function createPicture(data) {
-  const result = PICTURE_TEMPLATE.cloneNode(true);
-  result.querySelector(`.picture__img`).src = data.url;
-  result.querySelector(`.picture__likes`).textContent = data.likes;
-  result.querySelector(`.picture__comments`).textContent = data.comments.length.toString();
-  return result;
+function createPicture(pictureData) {
+  const picture = pictureTemplate.cloneNode(true);
+  picture.querySelector(`.picture__img`).src = pictureData.url;
+  picture.querySelector(`.picture__likes`).textContent = pictureData.likes;
+  picture.querySelector(`.picture__comments`).textContent = pictureData.comments.length.toString();
+  return picture;
 }
 
-function createPictures(dataArray) {
+function createPictures(pictures) {
   const fragment = document.createDocumentFragment();
-  for (let data of dataArray) {
-    fragment.appendChild(createPicture(data));
+  for (let picture of pictures) {
+    fragment.appendChild(createPicture(picture));
   }
-  PICTURES.appendChild(fragment);
+  pictureSection.appendChild(fragment);
 }
 
-let pictures = generatePictures(PHOTO_COUNT);
-createPictures(pictures);
+const generatedPictures = generatePictures(PHOTO_COUNT);
+createPictures(generatedPictures);
 
-BIG_PICTURE.classList.remove(`hidden`);
+bigPicture.classList.remove(`hidden`);
 
-function makeCommentElement(data) {
-  const result = document.createElement(`li`);
-  result.classList.add(`social__comment`);
-  const avatarElement = document.createElement(`img`);
-  avatarElement.classList.add(`social__picture`);
-  avatarElement.src = data.avatar;
-  avatarElement.alt = data.name;
-  avatarElement.width = AVATAR_SIZE;
-  avatarElement.height = AVATAR_SIZE;
-  result.appendChild(avatarElement);
-  const msgElement = document.createElement(`p`);
-  msgElement.classList.add(`social__text`);
-  msgElement.textContent = data.message;
-  result.appendChild(msgElement);
-  return result;
+function makeCommentElement(commentData) {
+  const comment = document.createElement(`li`);
+  const avatar = document.createElement(`img`);
+  const msg = document.createElement(`p`);
+  comment.classList.add(`social__comment`);
+  avatar.classList.add(`social__picture`);
+  avatar.src = commentData.avatar;
+  avatar.alt = commentData.name;
+  avatar.width = AVATAR_SIZE;
+  avatar.height = AVATAR_SIZE;
+  comment.appendChild(avatar);
+  msg.classList.add(`social__text`);
+  msg.textContent = commentData.message;
+  comment.appendChild(msg);
+  return comment;
 }
 
-function setupBigPicture(element) {
-  BIG_PICTURE_IMG.src = element.url;
-  BIG_PICTURE_LIKE_COUNT.textContent = element.likes;
-  BIG_PICTURE_COMMENT_COUNT.textContent = element.comments.length.toString();
-  BIG_PICTURE_CAPTION.textContent = element.description;
-  BIG_PICTURE_SOCIAL_COMMENT_COUNT.classList.add(`hidden`);
-  BIG_PICTURE_LOADER_BUTTON.classList.add(`hidden`);
-  document.body.classList.add(`modal-open`);
-  SOCIAL_COMMENT_LIST.forEach((el) => {
-    el.remove();
-  });
+function setupBigPicture(pictureData) {
   const fragment = document.createDocumentFragment();
-  for (let comment of element.comments) {
+  bigPictureImg.src = pictureData.url;
+  bigPictureLikeCount.textContent = pictureData.likes;
+  bigPictureCommentCount.textContent = pictureData.comments.length.toString();
+  bigPictureCaption.textContent = pictureData.description;
+  bigPictureSocialCommentCount.classList.add(`hidden`);
+  bigPictureLoaderButton.classList.add(`hidden`);
+  document.body.classList.add(`modal-open`);
+  socialCommentsList.innerHTML = ``;
+  for (let comment of pictureData.comments) {
     fragment.appendChild(makeCommentElement(comment));
   }
-  SOCIAL_COMMENTS.appendChild(fragment);
+  socialCommentsList.appendChild(fragment);
 }
 
-setupBigPicture(pictures[0]);
+setupBigPicture(generatedPictures[0]);
