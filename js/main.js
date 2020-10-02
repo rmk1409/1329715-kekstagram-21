@@ -83,8 +83,6 @@ function createPictures(pictures) {
 const generatedPictures = generatePictures(PHOTO_COUNT);
 createPictures(generatedPictures);
 
-bigPicture.classList.remove(`hidden`);
-
 function makeCommentElement(commentData) {
   const comment = document.createElement(`li`);
   const avatar = document.createElement(`img`);
@@ -104,13 +102,14 @@ function makeCommentElement(commentData) {
 
 function setupBigPicture(pictureData) {
   const fragment = document.createDocumentFragment();
+  // bigPicture.classList.remove(`hidden`);
   bigPictureImg.src = pictureData.url;
   bigPictureLikeCount.textContent = pictureData.likes;
   bigPictureCommentCount.textContent = pictureData.comments.length.toString();
   bigPictureCaption.textContent = pictureData.description;
   bigPictureSocialCommentCount.classList.add(`hidden`);
   bigPictureLoaderButton.classList.add(`hidden`);
-  document.body.classList.add(`modal-open`);
+  // document.body.classList.add(`modal-open`);
   socialCommentsList.innerHTML = ``;
   for (let comment of pictureData.comments) {
     fragment.appendChild(makeCommentElement(comment));
