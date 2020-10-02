@@ -36,6 +36,8 @@ const openEditForm = () => {
   effectLevel.style.display = `none`;
   effectNoneFilterInput.checked = true;
   imgPreview.className = ``;
+  scaleValue.value = `100%`;
+  imgPreview.style.transform = `scale(1)`;
 
   uploadFileInput.removeEventListener(`change`, onUploadFileInputChange);
 

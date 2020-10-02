@@ -32,6 +32,9 @@ const bigPictureCaption = bigPicture.querySelector(`.social__caption`);
 const bigPictureSocialCommentCount = bigPicture.querySelector(`.social__comment-count`);
 const bigPictureLoaderButton = bigPicture.querySelector(`.comments-loader`);
 
+const picturesContainer = document.querySelector(`.pictures`);
+const closeBigPictureButton = bigPicture.querySelector(`.big-picture__cancel`);
+
 function generateComments() {
   const comments = [];
   const commentCount = Math.ceil(Math.random() * MAX_COMMENT_COUNT);
@@ -55,6 +58,7 @@ function generatePictures(count) {
     const generatedDescriptionValue = `descr - ${i + 1}`;
     const generatedLikesValue = Math.floor(MIN_LIKE_COUNT + Math.random() * SHIFT_LIKE_COUNT);
     pictures.push({
+      id: (i + 1),
       url: generatedUrlValue,
       description: generatedDescriptionValue,
       likes: generatedLikesValue,
@@ -66,6 +70,7 @@ function generatePictures(count) {
 
 function createPicture(pictureData) {
   const picture = pictureTemplate.cloneNode(true);
+  picture.dataset.id = pictureData.id;
   picture.querySelector(`.picture__img`).src = pictureData.url;
   picture.querySelector(`.picture__likes`).textContent = pictureData.likes;
   picture.querySelector(`.picture__comments`).textContent = pictureData.comments.length.toString();
@@ -100,21 +105,68 @@ function makeCommentElement(commentData) {
   return comment;
 }
 
-function setupBigPicture(pictureData) {
+function openBigPicture(pictureData) {
   const fragment = document.createDocumentFragment();
-  // bigPicture.classList.remove(`hidden`);
+  bigPicture.classList.remove(`hidden`);
+  document.body.classList.add(`modal-open`);
   bigPictureImg.src = pictureData.url;
   bigPictureLikeCount.textContent = pictureData.likes;
   bigPictureCommentCount.textContent = pictureData.comments.length.toString();
   bigPictureCaption.textContent = pictureData.description;
   bigPictureSocialCommentCount.classList.add(`hidden`);
   bigPictureLoaderButton.classList.add(`hidden`);
-  // document.body.classList.add(`modal-open`);
   socialCommentsList.innerHTML = ``;
   for (let comment of pictureData.comments) {
     fragment.appendChild(makeCommentElement(comment));
   }
   socialCommentsList.appendChild(fragment);
+
+  picturesContainer.removeEventListener(`click`, onPicturesContainerClick);
+  picturesContainer.removeEventListener(`keydown`, onPicturesContainerKeydownEnter);
+
+  closeBigPictureButton.addEventListener(`click`, onCloseBigPictureButton);
+  document.addEventListener(`keydown`, onDocumentEscBigPictureKeydown);
 }
 
-setupBigPicture(generatedPictures[0]);
+function closeBigPicture() {
+  bigPicture.classList.add(`hidden`);
+  document.body.classList.remove(`modal-open`);
+
+  picturesContainer.addEventListener(`click`, onPicturesContainerClick);
+  picturesContainer.addEventListener(`keydown`, onPicturesContainerKeydownEnter);
+
+  closeBigPictureButton.removeEventListener(`click`, onCloseBigPictureButton);
+  document.removeEventListener(`keydown`, onDocumentEscBigPictureKeydown);
+}
+
+function onPicturesContainerClick(evt) {
+  if (evt.target.matches(`.picture__img`)) {
+    evt.preventDefault();
+  }
+  const pathElement = evt.path[1];
+  if (pathElement.matches(`.picture`)) {
+    openBigPicture(generatedPictures[pathElement.dataset.id - 1]);
+  }
+}
+
+picturesContainer.addEventListener(`click`, onPicturesContainerClick);
+
+function onPicturesContainerKeydownEnter(evt) {
+  const pathElement = evt.path[0];
+  if (evt.key === `Enter` && pathElement.matches(`.picture`)) {
+    openBigPicture(generatedPictures[pathElement.dataset.id - 1]);
+  }
+}
+
+picturesContainer.addEventListener(`keydown`, onPicturesContainerKeydownEnter);
+
+function onCloseBigPictureButton() {
+  closeBigPicture();
+}
+
+function onDocumentEscBigPictureKeydown(evt) {
+  if (evt.key === `Escape`) {
+    evt.preventDefault();
+    closeBigPicture();
+  }
+}
