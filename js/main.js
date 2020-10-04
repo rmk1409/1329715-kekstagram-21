@@ -121,9 +121,6 @@ function openBigPicture(pictureData) {
   }
   socialCommentsList.appendChild(fragment);
 
-  picturesContainer.removeEventListener(`click`, onPicturesContainerClick);
-  picturesContainer.removeEventListener(`keydown`, onPicturesContainerKeydownEnter);
-
   closeBigPictureButton.addEventListener(`click`, onCloseBigPictureButton);
   document.addEventListener(`keydown`, onDocumentEscBigPictureKeydown);
 }
@@ -132,29 +129,27 @@ function closeBigPicture() {
   bigPicture.classList.add(`hidden`);
   document.body.classList.remove(`modal-open`);
 
-  picturesContainer.addEventListener(`click`, onPicturesContainerClick);
-  picturesContainer.addEventListener(`keydown`, onPicturesContainerKeydownEnter);
-
   closeBigPictureButton.removeEventListener(`click`, onCloseBigPictureButton);
   document.removeEventListener(`keydown`, onDocumentEscBigPictureKeydown);
 }
 
+picturesContainer.addEventListener(`click`, onPicturesContainerClick);
+picturesContainer.addEventListener(`keydown`, onPicturesContainerKeydownEnter);
+
 function onPicturesContainerClick(evt) {
-  if (evt.target.matches(`.picture__img`)) {
+  const picture = evt.target.closest(`.picture`);
+  if (picture) {
     evt.preventDefault();
-  }
-  const pathElement = evt.path[1];
-  if (pathElement.matches(`.picture`)) {
-    openBigPicture(generatedPictures[pathElement.dataset.id - 1]);
+    openBigPicture(generatedPictures[picture.dataset.id - 1]);
   }
 }
 
 picturesContainer.addEventListener(`click`, onPicturesContainerClick);
 
 function onPicturesContainerKeydownEnter(evt) {
-  const pathElement = evt.path[0];
-  if (evt.key === `Enter` && pathElement.matches(`.picture`)) {
-    openBigPicture(generatedPictures[pathElement.dataset.id - 1]);
+  const picture = evt.target;
+  if (evt.key === `Enter` && picture.matches(`.picture`)) {
+    openBigPicture(generatedPictures[picture.dataset.id - 1]);
   }
 }
 
