@@ -8,11 +8,13 @@
   const MAX_SCALE_VALUE = 100;
   const SCALE_GAP = 25;
 
-  const DEFAULT_LEVEL_VALUE = `100`;
-
   const ESCAPE_KEY = `Escape`;
 
   const DEFAULT_HASHTAG_ERROR_MSG = `Something wrong in tags!`;
+
+  const DEFAULT_LEVEL_VALUE = 100;
+  const MIN_PIN_VALUE = 0;
+  const MAX_PIN_VALUE = 100;
 
   const uploadForm = document.querySelector(`#upload-select-image`);
 
@@ -29,6 +31,7 @@
   const effectLevelPin = uploadForm.querySelector(`.effect-level__pin`);
   const effectLevelValue = uploadForm.querySelector(`.effect-level__value`);
   const effectLevelDepth = uploadForm.querySelector(`.effect-level__depth`);
+  const effectLevelLine = uploadForm.querySelector(`.effect-level__line`);
   const effectNoneFilterInput = uploadForm.querySelector(`#effect-none`);
 
   const textHashtags = uploadForm.querySelector(`.text__hashtags`);
@@ -47,7 +50,8 @@
     imgScaleFieldset.addEventListener(`click`, onScaleFieldsetClick);
 
     effectFieldset.addEventListener(`change`, onEffectFieldsetChange);
-    effectLevelPin.addEventListener(`mouseup`, onEffectLevelPinMouseUp);
+
+    effectLevelPin.addEventListener(`mousedown`, onEffectLevelPinMouseDown);
 
     textHashtags.addEventListener(`input`, onTextHashtagsInput);
     uploadForm.addEventListener(`submit`, onUploadFormSubmit);
@@ -65,7 +69,8 @@
     imgScaleFieldset.removeEventListener(`click`, onScaleFieldsetClick);
 
     effectFieldset.removeEventListener(`change`, onEffectFieldsetChange);
-    effectLevelPin.removeEventListener(`mouseup`, onEffectLevelPinMouseUp);
+
+    effectLevelPin.removeEventListener(`mousedown`, onEffectLevelPinMouseDown);
 
     textHashtags.setCustomValidity(``);
     textHashtags.removeEventListener(`input`, onTextHashtagsInput);
@@ -124,6 +129,12 @@
     effectLevelDepth.style.width = `${value}%`;
   }
 
+  function setFilter() {
+    const levelValue = effectLevelValue.value;
+    const currentFilter = imgPreview.className.split(`\-\-`)[1];
+    imgPreview.style.filter = filter[currentFilter](levelValue);
+  }
+
   function onEffectFieldsetChange(evt) {
     const effectRadio = evt.target;
     const selectedValue = effectRadio.value;
@@ -147,19 +158,47 @@
       return `invert(${level}%)`;
     },
     phobos(level) {
-      return `blur(${Math.round(level / 33)}px)`;
+      return `blur(${level / 33}px)`;
     },
     heat(level) {
-      return `brightness(${1 + Math.round(level / 50)})`;
+      return `brightness(${1 + level / 50})`;
     }
   };
 
-  function onEffectLevelPinMouseUp() {
-    const levelValue = effectLevelValue.value;
-    const currentFilter = imgPreview.className.split(`\-\-`)[1];
+  function onEffectLevelPinMouseDown(evt) {
+    evt.preventDefault();
 
-    setPin(levelValue);
-    imgPreview.style.filter = filter[currentFilter](levelValue);
+    document.addEventListener(`mousemove`, onDocumentMove);
+    document.addEventListener(`mouseup`, onDocumentMouseUp);
+
+    function onDocumentMove(moveEvt) {
+      moveEvt.preventDefault();
+
+      const shiftInPx = moveEvt.movementX;
+      const shiftInRelativeNumber = shiftInPx / effectLevelLine.offsetWidth * 100;
+      const oldValue = effectLevelValue.value;
+      let newValue = parseFloat(oldValue) + shiftInRelativeNumber;
+
+      let isViolationBorder = false;
+      if (newValue > MAX_PIN_VALUE || newValue < MIN_PIN_VALUE) {
+        isViolationBorder = true;
+        newValue = newValue > MAX_PIN_VALUE ? MAX_PIN_VALUE : MIN_PIN_VALUE;
+      }
+
+      setPin(newValue);
+      setFilter();
+
+      if (isViolationBorder) {
+        document.dispatchEvent(new CustomEvent(`mouseup`));
+      }
+    }
+
+    function onDocumentMouseUp(upEvt) {
+      upEvt.preventDefault();
+
+      document.removeEventListener(`mousemove`, onDocumentMove);
+      document.removeEventListener(`mouseup`, onDocumentMouseUp);
+    }
   }
 
   function onTextHashtagsInput() {
