@@ -21,15 +21,11 @@
     return hashes.length <= MAX_TAG_COUNT;
   }
 
-  function checkAbsenceTags(hashInputValue) {
-    return hashInputValue === ``;
-  }
-
   function checkHashTags(hashInputValue) {
-    const hashes = hashInputValue.split(` `).filter((el) => el.length > 0);
+    const hashes = hashInputValue.split(` `).filter((el) => el.trim());
 
-    return checkAbsenceTags(hashInputValue)
-      || (startWithHash(hashes) && checkRegEx(hashes) && checkDuplicatesAbsence(hashes) && checkTagMaxCount(hashes));
+    let isTagsValid = startWithHash(hashes) && checkRegEx(hashes) && checkDuplicatesAbsence(hashes) && checkTagMaxCount(hashes);
+    return !hashInputValue || isTagsValid;
   }
 
   window.hashTagChecker = {

@@ -3,7 +3,7 @@
 (function () {
   const FILTER_PREFIX = `effects__preview--`;
 
-  const SCALE_DEFAULT_VALUE = 100;
+  const DEFAULT_SCALE_VALUE = 100;
   const MIN_SCALE_VALUE = 25;
   const MAX_SCALE_VALUE = 100;
   const SCALE_GAP = 25;
@@ -12,7 +12,7 @@
 
   const DEFAULT_HASHTAG_ERROR_MSG = `Something wrong in tags!`;
 
-  const DEFAULT_LEVEL_VALUE = 100;
+  const DEFAULT_PIN_VALUE = 100;
   const MIN_PIN_VALUE = 0;
   const MAX_PIN_VALUE = 100;
 
@@ -37,12 +37,14 @@
   const textHashtags = uploadForm.querySelector(`.text__hashtags`);
   const comment = uploadForm.querySelector(`.text__description`);
 
+  let isMoved = false;
+
   function openEditForm() {
     document.body.classList.add(`modal-open`);
     editOverlay.classList.remove(`hidden`);
 
     resetImageFilter();
-    setScales();
+    setScales(DEFAULT_SCALE_VALUE);
 
     window.addEventListener(`keydown`, onWindowEscKeydown);
     uploadCancel.addEventListener(`click`, onUploadCancelClick);
@@ -50,8 +52,8 @@
     imgScaleFieldset.addEventListener(`click`, onScaleFieldsetClick);
 
     effectFieldset.addEventListener(`change`, onEffectFieldsetChange);
-
     effectLevelPin.addEventListener(`mousedown`, onEffectLevelPinMouseDown);
+    effectLevelLine.addEventListener(`click`, onEffectLevelLineClick);
 
     textHashtags.addEventListener(`input`, onTextHashtagsInput);
     uploadForm.addEventListener(`submit`, onUploadFormSubmit);
@@ -69,8 +71,8 @@
     imgScaleFieldset.removeEventListener(`click`, onScaleFieldsetClick);
 
     effectFieldset.removeEventListener(`change`, onEffectFieldsetChange);
-
     effectLevelPin.removeEventListener(`mousedown`, onEffectLevelPinMouseDown);
+    effectLevelLine.removeEventListener(`click`, onEffectLevelLineClick);
 
     textHashtags.setCustomValidity(``);
     textHashtags.removeEventListener(`input`, onTextHashtagsInput);
@@ -100,11 +102,9 @@
     closeEditForm();
   }
 
-  function setScales(initialScale, newScale = SCALE_DEFAULT_VALUE) {
-    if (initialScale !== newScale) {
-      scaleValue.value = `${newScale}%`;
-      imgPreview.style.transform = `scale(${newScale / 100})`;
-    }
+  function setScales(newScale = DEFAULT_SCALE_VALUE) {
+    scaleValue.value = `${newScale}%`;
+    imgPreview.style.transform = `scale(${newScale / 100})`;
   }
 
   function onScaleFieldsetClick(evt) {
@@ -119,11 +119,11 @@
         newScale = initialScale + SCALE_GAP;
         newScale = newScale > MAX_SCALE_VALUE ? MAX_SCALE_VALUE : newScale;
       }
-      setScales(initialScale, newScale);
+      setScales(newScale);
     }
   }
 
-  function setPin(value = DEFAULT_LEVEL_VALUE) {
+  function setPin(value = DEFAULT_PIN_VALUE) {
     effectLevelValue.value = `${value}`;
     effectLevelPin.style.left = `${value}%`;
     effectLevelDepth.style.width = `${value}%`;
@@ -135,15 +135,31 @@
     imgPreview.style.filter = filter[currentFilter](levelValue);
   }
 
+  function onEffectLevelLineClick(evt) {
+    if (!isMoved) {
+      evt.preventDefault();
+      effectLevelPin.style.transitionDuration = `0.3s`;
+      effectLevelDepth.style.transitionDuration = `0.3s`;
+      setPin(calculateShiftInRelativeNumber(evt.offsetX));
+      setTimeout(function () {
+        effectLevelPin.style.transitionDuration = ``;
+        effectLevelDepth.style.transitionDuration = ``;
+      }, 300);
+      setFilter();
+    }
+    isMoved = false;
+  }
+
   function onEffectFieldsetChange(evt) {
-    const effectRadio = evt.target;
-    const selectedValue = effectRadio.value;
-    resetImageFilter();
-    if (selectedValue !== `none`) {
-      effectRadio.checked = true;
-      imgPreview.classList.add(`${FILTER_PREFIX}${selectedValue}`);
+    const selectedValue = evt.target.value;
+    setScales(DEFAULT_SCALE_VALUE);
+    if (selectedValue === `none`) {
+      resetImageFilter();
+    } else {
+      imgPreview.style.filter = ``;
+      imgPreview.className = `${FILTER_PREFIX}${selectedValue}`;
       effectLevel.style.display = `block`;
-      setPin();
+      setPin(DEFAULT_PIN_VALUE);
     }
   }
 
@@ -165,6 +181,10 @@
     }
   };
 
+  function calculateShiftInRelativeNumber(shiftInPx) {
+    return shiftInPx / effectLevelLine.offsetWidth * 100;
+  }
+
   function onEffectLevelPinMouseDown(evt) {
     evt.preventDefault();
 
@@ -173,24 +193,18 @@
 
     function onDocumentMove(moveEvt) {
       moveEvt.preventDefault();
+      isMoved = true;
 
-      const shiftInPx = moveEvt.movementX;
-      const shiftInRelativeNumber = shiftInPx / effectLevelLine.offsetWidth * 100;
+      const shiftInRelativeNumber = calculateShiftInRelativeNumber(moveEvt.movementX);
       const oldValue = effectLevelValue.value;
       let newValue = parseFloat(oldValue) + shiftInRelativeNumber;
 
-      let isViolationBorder = false;
       if (newValue > MAX_PIN_VALUE || newValue < MIN_PIN_VALUE) {
-        isViolationBorder = true;
         newValue = newValue > MAX_PIN_VALUE ? MAX_PIN_VALUE : MIN_PIN_VALUE;
       }
 
       setPin(newValue);
       setFilter();
-
-      if (isViolationBorder) {
-        document.dispatchEvent(new CustomEvent(`mouseup`));
-      }
     }
 
     function onDocumentMouseUp(upEvt) {
