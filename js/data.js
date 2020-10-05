@@ -56,7 +56,7 @@
     return pictures;
   }
 
-  let generatedPictures = [];
+  const generatedPictures = [];
 
   function run() {
     generatedPictures.push(...generatePictures(PHOTO_COUNT));

@@ -24,7 +24,7 @@
   function checkHashTags(hashInputValue) {
     const hashes = hashInputValue.split(` `).filter((el) => el.trim());
 
-    let isTagsValid = startWithHash(hashes) && checkRegEx(hashes) && checkDuplicatesAbsence(hashes) && checkTagMaxCount(hashes);
+    const isTagsValid = startWithHash(hashes) && checkRegEx(hashes) && checkDuplicatesAbsence(hashes) && checkTagMaxCount(hashes);
     return !hashInputValue || isTagsValid;
   }
 
