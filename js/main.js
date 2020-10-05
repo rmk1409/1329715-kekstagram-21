@@ -1,9 +1,8 @@
 'use strict';
 
 (function () {
-  const PHOTO_COUNT = 25;
-
-  window.gallery.fillGallery(PHOTO_COUNT);
+  window.data.run();
+  window.gallery.fillGallery(window.data.generatedPictures);
   window.preview.run();
   window.form.run();
 })();

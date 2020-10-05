@@ -77,18 +77,16 @@
     const picture = evt.target.closest(`.picture`);
     if (picture) {
       evt.preventDefault();
-      openBigPicture(window.gallery.generatedPictures[picture.dataset.id - 1]);
+      openBigPicture(window.data.generatedPictures[picture.dataset.id - 1]);
     }
   }
-
 
   function onPicturesContainerKeydownEnter(evt) {
     const picture = evt.target;
     if (evt.key === `Enter` && picture.matches(`.picture`)) {
-      openBigPicture(window.gallery.generatedPictures[picture.dataset.id - 1]);
+      openBigPicture(window.data.generatedPictures[picture.dataset.id - 1]);
     }
   }
-
 
   function run() {
     window.picture.pictureSection.addEventListener(`click`, onPicturesContainerClick);

@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  const PHOTO_COUNT = 25;
   const MESSAGE_TEMPLATES = [
     `Всё отлично!`,
     `В целом всё неплохо. Но не всё.`,
@@ -55,7 +56,14 @@
     return pictures;
   }
 
+  const generatedPictures = [];
+
+  function run() {
+    generatedPictures.push(...generatePictures(PHOTO_COUNT));
+  }
+
   window.data = {
-    generatePictures
+    generatedPictures,
+    run
   };
 })();
