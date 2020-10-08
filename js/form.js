@@ -227,9 +227,10 @@
   }
 
   function onUploadFormSubmit(evt) {
-    if (!textHashtags.validity.valid) {
-      evt.preventDefault();
-    }
+    let formData = new FormData(uploadForm);
+    closeEditForm();
+    window.backend.send(window.popupMsg.onSendSuccess, window.popupMsg.onSendError, formData);
+    evt.preventDefault();
   }
 
   function run() {
