@@ -182,7 +182,7 @@
   };
 
   function calculateShiftInRelativeNumber(shiftInPx) {
-    return shiftInPx / effectLevelLine.offsetWidth * 100;
+    return (shiftInPx / effectLevelLine.offsetWidth * 100).toFixed();
   }
 
   function onEffectLevelPinMouseDown(evt) {
