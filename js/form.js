@@ -124,6 +124,7 @@
   }
 
   function setPin(value = DEFAULT_PIN_VALUE) {
+    value = Math.round(value);
     effectLevelValue.value = `${value}`;
     effectLevelPin.style.left = `${value}%`;
     effectLevelDepth.style.width = `${value}%`;
@@ -182,7 +183,7 @@
   };
 
   function calculateShiftInRelativeNumber(shiftInPx) {
-    return (shiftInPx / effectLevelLine.offsetWidth * 100).toFixed();
+    return shiftInPx / effectLevelLine.offsetWidth * 100;
   }
 
   function onEffectLevelPinMouseDown(evt) {
@@ -197,7 +198,7 @@
 
       const shiftInRelativeNumber = calculateShiftInRelativeNumber(moveEvt.movementX);
       const oldValue = effectLevelValue.value;
-      let newValue = parseFloat(oldValue) + shiftInRelativeNumber;
+      let newValue = parseInt(oldValue, 10) + shiftInRelativeNumber;
 
       if (newValue > MAX_PIN_VALUE || newValue < MIN_PIN_VALUE) {
         newValue = newValue > MAX_PIN_VALUE ? MAX_PIN_VALUE : MIN_PIN_VALUE;
@@ -233,11 +234,11 @@
     evt.preventDefault();
   }
 
-  function run() {
+  function addListeners() {
     uploadFileInput.addEventListener(`change`, onUploadFileInputChange);
   }
 
   window.form = {
-    run
+    addListeners
   };
 })();

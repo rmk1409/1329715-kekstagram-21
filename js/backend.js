@@ -10,18 +10,10 @@
     const currentStatusCode = request.status;
     switch (currentStatusCode) {
       case SUCCESS_STATUS_CODE:
-        if (request.responseURL === GET_DATA_URL) {
-          onLoad(request.response);
-        } else {
-          onLoad();
-        }
+        onLoad(request.response);
         break;
       default:
-        if (request.responseURL === GET_DATA_URL) {
-          onError(`There is an error, status code is - ${currentStatusCode}.`);
-        } else {
-          onError();
-        }
+        onError(`There is an error, status code is - ${currentStatusCode}.`);
     }
   }
 
@@ -29,12 +21,9 @@
     const request = new XMLHttpRequest();
     if (methodType === `GET`) {
       request.responseType = `json`;
-      request.addEventListener(`error`, () => onError(`There is connection error`));
-      request.addEventListener(`timeout`, () => onError(`There is timeout error, passed more than ${TIMEOUT / 1000} sec.`));
-    } else if (methodType === `POST`) {
-      request.addEventListener(`error`, onError);
-      request.addEventListener(`timeout`, onError);
     }
+    request.addEventListener(`error`, () => onError(`There is connection error`));
+    request.addEventListener(`timeout`, () => onError(`There is timeout error, passed more than ${TIMEOUT / 1000} sec.`));
     request.timeout = TIMEOUT;
     request.addEventListener(`load`, () => onRequestLoad(request, onLoad, onError));
 

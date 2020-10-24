@@ -2,5 +2,5 @@
 
 (function () {
   window.backend.load(window.gallery.fillGallery, window.popupMsg.onLoadError);
-  window.form.run();
+  window.form.addListeners();
 })();
