@@ -140,11 +140,9 @@
   }
 
   function addListeners() {
-    window.picture.pictureSection.addEventListener(`click`, onPicturesContainerClick);
-    window.picture.pictureSection.addEventListener(`keydown`, onPicturesContainerKeydownEnter);
+    window.picture.section.addEventListener(`click`, onPicturesContainerClick);
+    window.picture.section.addEventListener(`keydown`, onPicturesContainerKeydownEnter);
   }
 
-  window.preview = {
-    addListeners
-  };
+  window.addListenersToPreview = addListeners;
 })();
