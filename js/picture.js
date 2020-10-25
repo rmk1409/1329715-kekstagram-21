@@ -79,12 +79,12 @@
     pictures.push(...picturesData);
     imgFilter.classList.toggle(`img-filters--inactive`, false);
     updatePictures();
-    window.preview.addListeners();
+    window.addListenersToPreview();
   }
 
   window.picture = {
     data: pictures,
-    pictureSection,
-    createPictures,
+    section: pictureSection,
+    fill: createPictures,
   };
 })();

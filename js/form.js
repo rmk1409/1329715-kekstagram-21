@@ -8,6 +8,8 @@
   const MAX_SCALE_VALUE = 100;
   const SCALE_GAP = 25;
 
+  const ANIMATION_DURATION = 300;
+
   const ESCAPE_KEY = `Escape`;
 
   const DEFAULT_HASHTAG_ERROR_MSG = `Something wrong in tags!`;
@@ -145,7 +147,7 @@
       setTimeout(function () {
         effectLevelPin.style.transitionDuration = ``;
         effectLevelDepth.style.transitionDuration = ``;
-      }, 300);
+      }, ANIMATION_DURATION);
       setFilter();
     }
     isMoved = false;
@@ -179,7 +181,7 @@
     },
     heat(level) {
       return `brightness(${1 + level / 50})`;
-    }
+    },
   };
 
   function calculateShiftInRelativeNumber(shiftInPx) {
@@ -218,7 +220,7 @@
 
   function onTextHashtagsInput() {
     const hashInputValue = textHashtags.value.trim();
-    const isHashTagCorrect = !window.hashTagChecker.checkHashTags(hashInputValue);
+    const isHashTagCorrect = !window.checkHashTags(hashInputValue);
 
     if (isHashTagCorrect) {
       textHashtags.setCustomValidity(DEFAULT_HASHTAG_ERROR_MSG);
@@ -238,7 +240,5 @@
     uploadFileInput.addEventListener(`change`, onUploadFileInputChange);
   }
 
-  window.form = {
-    addListeners
-  };
+  window.addListenersToForm = addListeners;
 })();

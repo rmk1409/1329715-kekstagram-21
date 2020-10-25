@@ -28,7 +28,5 @@
     return !hashInputValue || isTagsValid;
   }
 
-  window.hashTagChecker = {
-    checkHashTags
-  };
+  window.checkHashTags = checkHashTags;
 })();
