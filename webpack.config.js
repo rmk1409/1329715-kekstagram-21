@@ -2,6 +2,7 @@ const path = require("path");
 
 module.exports = {
   entry: [
+    "./js/imageLoader.js",
     "./js/popupMsg.js",
     "./js/backend.js",
     "./js/picture.js",
