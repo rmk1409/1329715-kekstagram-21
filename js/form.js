@@ -11,8 +11,6 @@ const ANIMATION_DURATION = 300;
 
 const ESCAPE_KEY = `Escape`;
 
-const DEFAULT_HASHTAG_ERROR_MSG = `Something wrong in tags!`;
-
 const DEFAULT_PIN_VALUE = 100;
 const MIN_PIN_VALUE = 0;
 const MAX_PIN_VALUE = 100;
@@ -219,20 +217,23 @@ function onEffectLevelPinMouseDown(evt) {
 
 function onTextHashtagsInput() {
   const hashInputValue = textHashtags.value.trim();
-  const isHashTagCorrect = !window.checkHashTags(hashInputValue);
 
-  if (isHashTagCorrect) {
-    textHashtags.setCustomValidity(DEFAULT_HASHTAG_ERROR_MSG);
-  } else {
+  try {
+    window.checkHashTags(hashInputValue);
     textHashtags.setCustomValidity(``);
+    textHashtags.style.boxShadow = `none`;
+  } catch (e) {
+    textHashtags.setCustomValidity(e.message);
+    textHashtags.style.boxShadow = `0 0 10px 5px red`;
+    textHashtags.reportValidity();
   }
 }
 
 function onUploadFormSubmit(evt) {
-  let formData = new FormData(uploadForm);
+  evt.preventDefault();
+  const formData = new FormData(uploadForm);
   closeEditForm();
   window.backend.send(window.popupMsg.onSendSuccess, window.popupMsg.onSendError, formData);
-  evt.preventDefault();
 }
 
 function addListeners() {
