@@ -85,7 +85,7 @@ function onSendSuccess() {
   successSendButton = successSendPopup.querySelector(`.success__button`);
   main.appendChild(successSendPopup);
   successSendButton.addEventListener(`click`, onSendSuccessButtonClick);
-  window.addEventListener(`keydown`, onSuccessWindowEscKeyDown);
+  document.addEventListener(`keydown`, onSuccessWindowEscKeyDown);
   document.addEventListener(`click`, onSuccessDocumentClick);
 }
 
