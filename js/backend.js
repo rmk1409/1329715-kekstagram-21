@@ -1,7 +1,7 @@
 'use strict';
 
 const GET_DATA_URL = `https://21.javascript.pages.academy/kekstagram/data`;
-const POST_DATA_URL = `https://javascript.pages.academy/kekstagram`;
+const POST_DATA_URL = `https://21.javascript.pages.academy/kekstagram`;
 const SUCCESS_STATUS_CODE = 200;
 const TIMEOUT = 5000;
 
